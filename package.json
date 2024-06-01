@@ -1,5 +1,5 @@
 {
-  "name": "@netris/cli",
+  "name": "@nestri/cli",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
@@ -8,5 +8,8 @@
   },
   "keywords": [],
   "author": "wanjohiryan",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.13.0"
+  }
 }
