@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss/table"
 	"github.com/muesli/termenv"
 	"github.com/spf13/cobra"
 )
@@ -34,6 +35,12 @@ var neoFetchCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		lipgloss.SetColorProfile(termenv.TrueColor)
 
+		baseStyle := lipgloss.NewStyle().
+			PaddingTop(1).
+			PaddingRight(4).
+			PaddingBottom(1).
+			PaddingLeft(4)
+
 		var (
 			b      strings.Builder
 			lines  = strings.Split(art, "\n")
@@ -47,7 +54,12 @@ var neoFetchCmd = &cobra.Command{
 			b.WriteRune('\n')
 		}
 
-		fmt.Print(b.String())
+		t := table.New().
+			Border(lipgloss.HiddenBorder())
+
+		t.Row(baseStyle.Render(b.String()), baseStyle.Render("System Info goes here"))
+
+		fmt.Print(t)
 
 		return nil
 	},
