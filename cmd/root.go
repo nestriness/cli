@@ -19,6 +19,7 @@ import (
 var art string
 
 // rootCmd represents the base command when called without any subcommands
+// For a good reference point, start here: https://github.com/charmbracelet/taskcli/blob/main/cmds.go
 var rootCmd = &cobra.Command{
 	Use:   "nestri",
 	Short: "A CLI tool to manage your cloud gaming service",
@@ -28,6 +29,7 @@ var rootCmd = &cobra.Command{
 	},
 }
 
+// this is for the "nestri neofetch" subcommand, has no arguments
 var neoFetchCmd = &cobra.Command{
 	Use:   "neofetch",
 	Short: "Show important system information",
@@ -65,6 +67,17 @@ var neoFetchCmd = &cobra.Command{
 	},
 }
 
+// this is the "nestri run" subcommand, takes no arguments for now
+var runCmd = &cobra.Command{
+	Use:   "run",
+	Short: "Run a game using nestri",
+	Args:  cobra.NoArgs,
+	//For now just show the "help"
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return cmd.Help()
+	},
+}
+
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
@@ -75,16 +88,12 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
 	rootCmd.AddCommand(neoFetchCmd)
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cli.yaml)")
+	rootCmd.AddCommand(runCmd)
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	//If you want to add subcommands to run for example "netri run -fsr" do it like this
+	// runCmd.Flags().BoolP("fsr", "f", false, "Run the Game with FSR enabled or not")
 }
 
 func colorize(c, s string) string {
