@@ -8,6 +8,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"sync"
+
+	"github.com/netrisdotme/cli/pkg/specs"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
@@ -35,11 +38,11 @@ var neoFetchCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		lipgloss.SetColorProfile(termenv.TrueColor)
 
-		baseStyle := lipgloss.NewStyle().
-			PaddingTop(1).
-			PaddingRight(4).
-			PaddingBottom(1).
-			PaddingLeft(4)
+		// baseStyle := lipgloss.NewStyle().
+		// 	MarginTop(1).
+		// 	MarginRight(4).
+		// 	MarginBottom(1).
+		// 	MarginLeft(4)
 
 		var (
 			b      strings.Builder
@@ -55,9 +58,17 @@ var neoFetchCmd = &cobra.Command{
 		}
 
 		t := table.New().
-			Border(lipgloss.HiddenBorder())
+			Border(lipgloss.HiddenBorder()).BorderStyle(lipgloss.NewStyle().Width(3))
 
-		t.Row(baseStyle.Render(b.String()), baseStyle.Render("System Info goes here"))
+		info := &specs.Specs{}
+		infoChan := make(chan specs.Specs, 1)
+		var wg sync.WaitGroup
+		wg.Add(1)
+		go getSpecs(info, infoChan, &wg)
+		wg.Wait()
+		newInfo := <-infoChan
+
+		t.Row(b.String(), newInfo.GPU)
 
 		fmt.Print(t)
 
@@ -110,4 +121,20 @@ func max(a, b int) int {
 		return a
 	}
 	return b
+}
+
+func getSpecs(info *specs.Specs, infoChan chan specs.Specs, wg *sync.WaitGroup) {
+	defer wg.Done()
+	sys := specs.New()
+	// info.Userhost = getUserHostname()
+	// info.OS = getOSName()
+	// info.Kernel = getKernelVersion()
+	// info.Uptime = getUptime()
+	// info.Shell = getShell()
+	// info.CPU = getCPUName()
+	// info.RAM = getMemStats()
+	info.GPU, _ = sys.GetGPUInfo()
+	// info.SystemArch, _ = getSystemArch()
+	// info.DiskUsage, _ = getDiskUsage()
+	infoChan <- *info
 }
