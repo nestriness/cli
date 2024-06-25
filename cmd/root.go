@@ -59,16 +59,16 @@ var neoFetchCmd = &cobra.Command{
 
 		t := table.New().
 			Border(lipgloss.HiddenBorder()).BorderStyle(lipgloss.NewStyle().Width(3))
+		//TODO: show this specs
+		// info := &specs.Specs{}
+		// infoChan := make(chan specs.Specs, 1)
+		// var wg sync.WaitGroup
+		// wg.Add(1)
+		// go getSpecs(info, infoChan, &wg)
+		// wg.Wait()
+		// newInfo := <-infoChan
 
-		info := &specs.Specs{}
-		infoChan := make(chan specs.Specs, 1)
-		var wg sync.WaitGroup
-		wg.Add(1)
-		go getSpecs(info, infoChan, &wg)
-		wg.Wait()
-		newInfo := <-infoChan
-
-		t.Row(b.String(), newInfo.GPU)
+		t.Row(b.String())
 
 		fmt.Print(t)
 
