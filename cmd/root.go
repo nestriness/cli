@@ -8,6 +8,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"sync"
+
+	"github.com/nestriness/cli/pkg/specs"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
@@ -19,7 +22,6 @@ import (
 var art string
 
 // rootCmd represents the base command when called without any subcommands
-// For a good reference point, start here: https://github.com/charmbracelet/taskcli/blob/main/cmds.go
 var rootCmd = &cobra.Command{
 	Use:   "nestri",
 	Short: "A CLI tool to manage your cloud gaming service",
@@ -29,7 +31,6 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-// this is for the "nestri neofetch" subcommand, has no arguments
 var neoFetchCmd = &cobra.Command{
 	Use:   "neofetch",
 	Short: "Show important system information",
@@ -37,16 +38,16 @@ var neoFetchCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		lipgloss.SetColorProfile(termenv.TrueColor)
 
-		baseStyle := lipgloss.NewStyle().
-			PaddingTop(1).
-			PaddingRight(4).
-			PaddingBottom(1).
-			PaddingLeft(4)
+		// baseStyle := lipgloss.NewStyle().
+		// 	MarginTop(1).
+		// 	MarginRight(4).
+		// 	MarginBottom(1).
+		// 	MarginLeft(4)
 
 		var (
 			b      strings.Builder
 			lines  = strings.Split(art, "\n")
-			colors = []string{"#F8481C", "#F74127", "#F53B30", "#F23538", "#F02E40"}
+			colors = []string{"#CC3D00", "#CC3D00"}
 			step   = len(lines) / len(colors)
 		)
 
@@ -57,24 +58,21 @@ var neoFetchCmd = &cobra.Command{
 		}
 
 		t := table.New().
-			Border(lipgloss.HiddenBorder())
+			Border(lipgloss.HiddenBorder()).BorderStyle(lipgloss.NewStyle().Width(3))
+		//TODO: show this specs
+		// info := &specs.Specs{}
+		// infoChan := make(chan specs.Specs, 1)
+		// var wg sync.WaitGroup
+		// wg.Add(1)
+		// go getSpecs(info, infoChan, &wg)
+		// wg.Wait()
+		// newInfo := <-infoChan
 
-		t.Row(baseStyle.Render(b.String()), baseStyle.Render("System Info goes here"))
+		t.Row(b.String())
 
 		fmt.Print(t)
 
 		return nil
-	},
-}
-
-// this is the "nestri run" subcommand, takes no arguments for now
-var runCmd = &cobra.Command{
-	Use:   "run",
-	Short: "Run a game using nestri",
-	Args:  cobra.NoArgs,
-	//For now just show the "help"
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return cmd.Help()
 	},
 }
 
@@ -88,12 +86,16 @@ func Execute() {
 }
 
 func init() {
+	// Here you will define your flags and configuration settings.
+	// Cobra supports persistent flags, which, if defined here,
+	// will be global for your application.
 	rootCmd.AddCommand(neoFetchCmd)
 
-	rootCmd.AddCommand(runCmd)
+	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cli.yaml)")
 
-	//If you want to add subcommands to run for example "netri run -fsr" do it like this
-	// runCmd.Flags().BoolP("fsr", "f", false, "Run the Game with FSR enabled or not")
+	// Cobra also supports local flags, which will only run
+	// when this action is called directly.
+	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 func colorize(c, s string) string {
@@ -119,4 +121,20 @@ func max(a, b int) int {
 		return a
 	}
 	return b
+}
+
+func getSpecs(info *specs.Specs, infoChan chan specs.Specs, wg *sync.WaitGroup) {
+	defer wg.Done()
+	sys := specs.New()
+	// info.Userhost = getUserHostname()
+	// info.OS = getOSName()
+	// info.Kernel = getKernelVersion()
+	// info.Uptime = getUptime()
+	// info.Shell = getShell()
+	// info.CPU = getCPUName()
+	// info.RAM = getMemStats()
+	info.GPU, _ = sys.GetGPUInfo()
+	// info.SystemArch, _ = getSystemArch()
+	// info.DiskUsage, _ = getDiskUsage()
+	infoChan <- *info
 }
