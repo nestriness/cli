@@ -10,7 +10,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/netrisdotme/cli/pkg/specs"
+	"github.com/nestriness/cli/pkg/specs"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
@@ -47,7 +47,7 @@ var neoFetchCmd = &cobra.Command{
 		var (
 			b      strings.Builder
 			lines  = strings.Split(art, "\n")
-			colors = []string{"#F8481C", "#F74127", "#F53B30", "#F23538", "#F02E40"}
+			colors = []string{"#CC3D00", "#CC3D00"}
 			step   = len(lines) / len(colors)
 		)
 

@@ -1,4 +1,4 @@
-module github.com/netrisdotme/cli
+module github.com/nestriness/cli
 
 go 1.22.2
 
