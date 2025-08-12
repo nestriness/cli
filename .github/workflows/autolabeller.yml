@@ -82,7 +82,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout your code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - uses: srvaroa/labeler@v1
         with:
